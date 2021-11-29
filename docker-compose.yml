@@ -1,0 +1,61 @@
+version: "3"
+services:
+  db:
+    container_name: db
+    build: "./postgres-db"
+    # image: postgres:latest
+    restart: always
+    env_file:
+      - database.env
+    # command: create database signup-app
+    volumes:
+      - ./database/data/postgres:/var/lib/postgresql/data
+      # - ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+      # - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  backend-service:
+    container_name: backend
+    depends_on:
+      - db
+    build: "./backend"
+    env_file:
+      - database.env
+    ports:
+      - 4000:4000
+
+  frontend-service:
+    container_name: frontend
+    depends_on:
+      - backend-service
+    build: "./frontend"
+    ports:
+      - 3000:80
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build: "./nginx"
+    ports:
+      - 80:80
+    links:
+      - frontend-service
+      - backend-service
+
+  adminer:
+    container_name: adminer
+    depends_on:
+      - db
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+    # tty: true
+    # stdin_open: true
+# create postgres database
+# create adminor service
+
+# volumes:
+#   pgdata:

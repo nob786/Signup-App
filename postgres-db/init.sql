@@ -1,0 +1,3 @@
+CREATE USER docker;
+CREATE DATABASE signup_app;
+GRANT ALL PRIVILEGES ON DATABASE signup_app TO docker;
